@@ -15,7 +15,14 @@ function existsUser($login) {
 // Проверка пароля
 function checkPassword($login, $password) {
     $users = getUsersList();
-    return existsUser($login) && password_verify($password, $users[$login]['password']);
+    if (!existsUser($login)) {
+        error_log("Пользователь $login не найден");
+        return false;
+    }
+    $hash = $users[$login]['password'];
+    $isValid = password_verify($password, $hash);
+    error_log("Проверка пароля: login=$login, hash=$hash, valid=" . ($isValid ? 'Да' : 'Нет'));
+    return $isValid;
 }
 
 // Текущий пользователь
